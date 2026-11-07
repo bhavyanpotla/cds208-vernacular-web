@@ -1,0 +1,117 @@
+{
+  "id": "science-water-cycle-02",
+  "subject": "science",
+  "grade": 6,
+  "title": {
+    "en-IN": "The water cycle",
+    "hi-IN": "जल चक्र"
+  },
+  "summary": {
+    "en-IN": "How water moves from the sea to the clouds and back.",
+    "hi-IN": "पानी समुद्र से बादलों तक और वापस कैसे चलता है।"
+  },
+  "segments": [
+    {
+      "id": "s1",
+      "text": {
+        "en-IN": "Water in the sea, rivers and lakes is heated by the sun and turns into vapour. This is evaporation.",
+        "hi-IN": "समुद्र, नदियों और झीलों का पानी सूर्य की गर्मी से गरम होकर वाष्प बन जाता है। इसे वाष्पीकरण कहते हैं।"
+      },
+      "key_terms": [
+        "evaporation",
+        "vapour"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": {
+        "en-IN": "The vapour rises, cools down and forms tiny drops. This is condensation, and it makes clouds.",
+        "hi-IN": "यह वाष्प ऊपर उठती है, ठंडी होती है और छोटी बूँदों में बदल जाती है। इसे संघनन कहते हैं, और इससे बादल बनते हैं।"
+      },
+      "key_terms": [
+        "condensation"
+      ]
+    },
+    {
+      "id": "s3",
+      "text": {
+        "en-IN": "When the drops become heavy they fall as rain. This is precipitation. The water flows back to the sea and the cycle starts again.",
+        "hi-IN": "जब बूँदें भारी हो जाती हैं तो वे वर्षा के रूप में गिरती हैं। इसे वर्षण कहते हैं। पानी वापस समुद्र में मिल जाता है और यह चक्र फिर शुरू होता है।"
+      },
+      "key_terms": [
+        "precipitation"
+      ]
+    }
+  ],
+  "quiz": [
+    {
+      "q": {
+        "en-IN": "What is the change of water into vapour called?",
+        "hi-IN": "पानी के वाष्प में बदलने को क्या कहते हैं?"
+      },
+      "options": {
+        "en-IN": [
+          "Evaporation",
+          "Condensation",
+          "Precipitation"
+        ],
+        "hi-IN": [
+          "वाष्पीकरण",
+          "संघनन",
+          "वर्षण"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "Heat turns water into vapour: evaporation.",
+        "hi-IN": "गर्मी पानी को वाष्प बनाती है: वाष्पीकरण।"
+      }
+    },
+    {
+      "q": {
+        "en-IN": "Clouds are formed when vapour…",
+        "hi-IN": "वाष्प कब बादल बनाती है?"
+      },
+      "options": {
+        "en-IN": [
+          "cools and condenses",
+          "gets hotter",
+          "falls as rain"
+        ],
+        "hi-IN": [
+          "ठंडी होकर संघनित होती है",
+          "और गरम होती है",
+          "वर्षा बनकर गिरती है"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "Cooling vapour condenses into tiny drops, and those drops are a cloud.",
+        "hi-IN": "ठंडी होती वाष्प छोटी बूँदों में बदल जाती है, और वही बूँदें बादल हैं।"
+      }
+    },
+    {
+      "q": {
+        "en-IN": "Rain falling from clouds is called…",
+        "hi-IN": "बादलों से गिरने वाली वर्षा को क्या कहते हैं?"
+      },
+      "options": {
+        "en-IN": [
+          "precipitation",
+          "evaporation",
+          "condensation"
+        ],
+        "hi-IN": [
+          "वर्षण",
+          "वाष्पीकरण",
+          "संघनन"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "Water falling from clouds is precipitation.",
+        "hi-IN": "बादलों से गिरने वाला पानी वर्षण है।"
+      }
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "id": "maths-fractions-03",
+  "subject": "maths",
+  "grade": 6,
+  "title": {
+    "en-IN": "What a fraction means",
+    "hi-IN": "भिन्न का अर्थ"
+  },
+  "summary": {
+    "en-IN": "Numerator, denominator, and adding like fractions.",
+    "hi-IN": "अंश, हर और समान हर वाली भिन्नों का जोड़।"
+  },
+  "segments": [
+    {
+      "id": "s1",
+      "text": {
+        "en-IN": "A fraction shows a part of a whole. In 3/4 the whole is cut into 4 equal parts and we take 3 of them.",
+        "hi-IN": "भिन्न किसी पूर्ण वस्तु का एक भाग दिखाती है। 3/4 में पूर्ण को 4 बराबर भागों में बाँटा गया है और हम उनमें से 3 लेते हैं।"
+      },
+      "key_terms": [
+        "fraction",
+        "numerator",
+        "denominator"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": {
+        "en-IN": "The number on top is the numerator. It counts how many parts we have.",
+        "hi-IN": "ऊपर की संख्या अंश कहलाती है। यह गिनती करती है कि हमारे पास कितने भाग हैं।"
+      },
+      "key_terms": [
+        "numerator"
+      ]
+    },
+    {
+      "id": "s3",
+      "text": {
+        "en-IN": "The number at the bottom is the denominator. It tells how many equal parts the whole was cut into.",
+        "hi-IN": "नीचे की संख्या हर कहलाती है। यह बताती है कि पूर्ण को कितने बराबर भागों में बाँटा गया था।"
+      },
+      "key_terms": [
+        "denominator"
+      ]
+    },
+    {
+      "id": "s4",
+      "text": {
+        "en-IN": "To add fractions with the same denominator, add the numerators and keep the denominator: 1/5 + 2/5 = 3/5.",
+        "hi-IN": "समान हर वाली भिन्नों को जोड़ने के लिए अंश जोड़िए और हर वही रखिए: 1/5 + 2/5 = 3/5।"
+      },
+      "key_terms": [
+        "fraction"
+      ]
+    }
+  ],
+  "quiz": [
+    {
+      "q": {
+        "en-IN": "In 5/8, which number is the numerator?",
+        "hi-IN": "5/8 में अंश कौन सी संख्या है?"
+      },
+      "options": {
+        "en-IN": [
+          "5",
+          "8",
+          "13"
+        ],
+        "hi-IN": [
+          "5",
+          "8",
+          "13"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "The numerator is the top number: 5.",
+        "hi-IN": "अंश ऊपर की संख्या है: 5।"
+      }
+    },
+    {
+      "q": {
+        "en-IN": "What does the denominator tell you?",
+        "hi-IN": "हर क्या बताता है?"
+      },
+      "options": {
+        "en-IN": [
+          "How many equal parts the whole has",
+          "How many parts we have",
+          "The answer"
+        ],
+        "hi-IN": [
+          "पूर्ण में कितने बराबर भाग हैं",
+          "हमारे पास कितने भाग हैं",
+          "उत्तर"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "The denominator counts the equal parts the whole was cut into.",
+        "hi-IN": "हर बताता है कि पूर्ण को कितने बराबर भागों में बाँटा गया।"
+      }
+    },
+    {
+      "q": {
+        "en-IN": "1/7 + 3/7 = ?",
+        "hi-IN": "1/7 + 3/7 = ?"
+      },
+      "options": {
+        "en-IN": [
+          "4/7",
+          "4/14",
+          "3/7"
+        ],
+        "hi-IN": [
+          "4/7",
+          "4/14",
+          "3/7"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "Same denominator, so add the numerators: 1 + 3 = 4, giving 4/7.",
+        "hi-IN": "हर समान है, इसलिए अंश जोड़िए: 1 + 3 = 4, उत्तर 4/7।"
+      }
+    }
+  ]
+}

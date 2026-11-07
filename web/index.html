@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vernacular Learning Platform — CDS208</title>
+  <meta name="description" content="Read, ask and be assessed in your mother tongue. CDS208 final project." />
+  <link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body class="no-js">
+  <div class="aurora" aria-hidden="true">
+    <span class="blob blob-a"></span><span class="blob blob-b"></span><span class="blob blob-c"></span>
+  </div>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="/">Vernacular</a>
+      <nav class="nav">
+        <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/learn.html" data-i18n="nav_learn">Learn</a>
+        <a href="/tutor.html" data-i18n="nav_tutor">Tutor</a>
+        <a href="/analytics.html" data-i18n="card_analytics">Analytics</a>
+        <a href="/translate.html" data-i18n="nav_translate">Translate</a>
+      </nav>
+      <div class="header-tools">
+        <select id="lang-select" aria-label="Language"></select>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="glass hero reveal">
+      <p class="eyebrow">CDS208 · <span id="mode-label">mock mode</span></p>
+      <h1 data-i18n="tagline">Learn in the language you think in.</h1>
+      <p class="lede" data-i18n="hero_sub">Read, ask, and be assessed in your mother tongue.</p>
+      <div class="pills">
+        <span class="pill accent"><span class="dot"></span><span id="mode-pill">Mock mode</span></span>
+        <span class="pill"><span id="lang-count">5</span> languages</span>
+        <span class="pill"><span id="lesson-count">4</span> lessons</span>
+        <span class="pill"><span id="event-count">0</span> events logged</span>
+      </div>
+    </section>
+
+    <section class="grid cols-4 mt-2">
+      <div class="card reveal"><span class="stat-value" data-count="5" id="stat-langs">5</span><span class="stat-label">languages</span></div>
+      <div class="card reveal"><span class="stat-value" data-count="4" id="stat-lessons">4</span><span class="stat-label">lessons</span></div>
+      <div class="card reveal"><span class="stat-value" data-count="17" id="stat-terms">17</span><span class="stat-label">glossary terms</span></div>
+      <div class="card reveal"><span class="stat-value" data-count="0" id="stat-events">0</span><span class="stat-label">events logged</span></div>
+    </section>
+
+    <section class="mt-2">
+      <p class="section-label">The loop</p>
+      <div class="grid cols-3">
+        <a class="card reveal" href="/learn.html" data-tilt>
+          <span class="chip">Phase 2</span>
+          <h3 data-i18n="card_reader">The lesson reader</h3>
+          <p class="muted">Lessons are data. Every key term is a button that glosses it in your language.</p>
+        </a>
+        <a class="card reveal" href="/translate.html" data-tilt>
+          <span class="chip">Phase 1</span>
+          <h3 data-i18n="card_translate">Live translation</h3>
+          <p class="muted">One cached service behind every surface. Provider, latency and cache state shown honestly.</p>
+        </a>
+        <a class="card reveal" href="/tutor.html" data-tilt>
+          <span class="chip">Phase 3</span>
+          <h3 data-i18n="card_tutor">The AI tutor</h3>
+          <p class="muted">Grounded in the segment you are reading — and it refuses when the lesson does not cover the question.</p>
+        </a>
+        <a class="card reveal" href="/analytics.html" data-tilt>
+          <span class="chip">Phase 4</span>
+          <h3 data-i18n="card_analytics">Analytics</h3>
+          <p class="muted">Every action is an event. The same rows feed this page and the Power BI report.</p>
+        </a>
+        <div class="card reveal" data-tilt>
+          <span class="chip">Phase 3</span>
+          <h3 data-i18n="card_progress">My progress</h3>
+          <p class="muted">A recommendation that works with an empty database, a dead provider or a junk model reply.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-2 grid cols-2">
+      <div class="reveal">
+        <p class="section-label">How this works</p>
+        <div class="panel">
+          <p>
+            A lesson is one JSON file with each segment in every supported language. English
+            and Hindi are hand-authored; Tamil, Telugu and Bengali are a content gap that the
+            translation service closes on first read and caches in SQLite. Every tap, question
+            and answer appends a row to an append-only event log, which is what the dashboard
+            reads. One loop, one source of truth.
+          </p>
+        </div>
+      </div>
+      <div class="reveal">
+        <p class="section-label">Runtime</p>
+        <div class="panel">
+          <div class="chips" id="runtime-chips"></div>
+          <p class="muted" id="runtime-note">Checking the API…</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>CDS208 final project · FastAPI + vanilla HTML/CSS/JS · Sarvam AI with an offline mock · <a href="/api/health">API health</a></p>
+  </footer>
+
+  <script type="module">
+    import { boot, api, chip, countUp } from "/assets/app.js";
+
+    boot("/");
+
+    try {
+      const h = await api("/api/health");
+      document.querySelector("#lang-count").textContent = h.languages;
+      document.querySelector("#lesson-count").textContent = h.lessons;
+      document.querySelector("#event-count").textContent = h.events;
+      document.querySelector("#stat-langs").dataset.count = h.languages;
+      document.querySelector("#stat-langs").textContent = h.languages;
+      document.querySelector("#stat-lessons").dataset.count = h.lessons;
+      document.querySelector("#stat-lessons").textContent = h.lessons;
+      document.querySelector("#stat-terms").dataset.count = h.glossary_terms;
+      document.querySelector("#stat-terms").textContent = h.glossary_terms;
+      document.querySelector("#stat-events").dataset.count = h.events;
+      ["#stat-langs", "#stat-lessons", "#stat-terms", "#stat-events"].forEach((sel) => {
+        const node = document.querySelector(sel);
+        node.removeAttribute("data-count-bound");
+        node.textContent = node.dataset.count;
+      });
+
+      const live = h.mode === "sarvam";
+      document.querySelector("#mode-pill").textContent = live ? "Live · Sarvam AI" : "Mock mode";
+      document.querySelector("#mode-label").textContent = live ? "live" : "mock mode";
+      document.querySelector("#runtime-chips").innerHTML = [
+        chip(live ? "Sarvam AI" : "Mock mode", live ? "ok" : "warn"),
+        chip(`${h.lessons} lessons`, "muted"),
+        chip(`${h.languages} languages`, "muted"),
+        chip(`${h.events} events`, "muted"),
+      ].join("");
+      document.querySelector("#runtime-note").textContent = live
+        ? "A key is configured, so translation and tutoring call Sarvam. Every call is logged."
+        : "No API key configured. Every AI path returns a visibly labelled mock — the demo cannot be broken by Wi-Fi.";
+    } catch (error) {
+      document.querySelector("#runtime-note").textContent = "API unreachable: " + error.message;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tutor — Vernacular Learning Platform</title>
+  <link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body class="no-js">
+  <div class="aurora" aria-hidden="true">
+    <span class="blob blob-a"></span><span class="blob blob-b"></span><span class="blob blob-c"></span>
+  </div>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="/">Vernacular</a>
+      <nav class="nav">
+        <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/learn.html" data-i18n="nav_learn">Learn</a>
+        <a href="/tutor.html" data-i18n="nav_tutor">Tutor</a>
+        <a href="/analytics.html" data-i18n="card_analytics">Analytics</a>
+        <a href="/translate.html" data-i18n="nav_translate">Translate</a>
+      </nav>
+      <div class="header-tools"><select id="lang-select" aria-label="Language"></select></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="glass hero reveal">
+      <p class="eyebrow">Phase 3 · Agentic tutoring</p>
+      <h1 id="tutor-title">Ask the tutor</h1>
+      <p class="lede">
+        Answers come from the segment you are reading, in your language. When the lesson does
+        not cover something, the tutor says so instead of guessing.
+      </p>
+      <div class="pills">
+        <span class="pill" id="mode-pill">Mock mode</span>
+        <span class="pill">grounded</span>
+        <span class="pill">refuses to invent</span>
+      </div>
+    </section>
+
+    <section class="mt-2 grid cols-2">
+      <div class="reveal">
+        <label class="field" for="tutor-lesson" data-i18n="learn_lessons">Lessons</label>
+        <select id="tutor-lesson"></select>
+      </div>
+      <div class="reveal">
+        <label class="field" for="tutor-segment" id="ctx-label">Reading context</label>
+        <select id="tutor-segment"></select>
+      </div>
+    </section>
+
+    <section class="mt-2 grid cols-2" style="align-items:start">
+      <div class="reveal">
+        <div class="panel" id="ctx-panel"><p class="muted">Loading…</p></div>
+        <div class="row tight mt-1">
+          <button class="btn" id="simpler-btn">Explain simpler</button>
+          <button class="btn" id="example-btn">Give me an example</button>
+        </div>
+      </div>
+      <div class="reveal">
+        <p class="section-label">Conversation</p>
+        <div class="chat-log" id="chat-log"></div>
+        <div class="row tight mt-1">
+          <input type="text" id="chat-input" placeholder="Ask about this segment…" />
+          <button class="btn primary" id="send-btn">Ask</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-2 reveal">
+      <div class="panel">
+        <h3>What this agent will not do</h3>
+        <p class="muted" style="font-size:0.9rem">
+          It will not answer from outside the lesson you selected — ask something the lesson
+          does not cover and it refuses, then gives one hint. That is the design, not a
+          failure. Grounding is checked lexically against the lesson text, so a question
+          phrased with none of the lesson's vocabulary is treated as outside it; it errs
+          toward refusing.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer><p>Every question and every refusal is logged, so the refusal rate is measurable.</p></footer>
+
+  <script type="module">
+    import { boot, api, chip, esc, lang, toast } from "/assets/app.js";
+
+    await boot("/tutor.html");
+    const current = lang();
+
+    const lessonSel = document.querySelector("#tutor-lesson");
+    const segmentSel = document.querySelector("#tutor-segment");
+    const log = document.querySelector("#chat-log");
+    const input = document.querySelector("#chat-input");
+
+    const lessons = await api(`/api/lessons?lang=${current}`);
+    lessonSel.innerHTML = lessons
+      .map((item) => `<option value="${esc(item.id)}">${esc(item.title)}</option>`)
+      .join("");
+
+    let lesson = null;
+    let history = [];
+
+    function pushMessage(role, text, meta = []) {
+      const node = document.createElement("div");
+      node.className = `msg ${role}`;
+      node.innerHTML = `<div>${esc(text)}</div>${meta.length ? `<div class="chips">${meta.join("")}</div>` : ""}`;
+      log.appendChild(node);
+      log.scrollTop = log.scrollHeight;
+      return node;
+    }
+
+    async function loadLesson(id) {
+      lesson = await api(`/api/lessons/${id}?lang=${current}`);
+      segmentSel.innerHTML = lesson.segments
+        .map((segment) => `<option value="${esc(segment.id)}">${esc(segment.text.slice(0, 70))}…</option>`)
+        .join("");
+      document.querySelector("#ctx-panel").innerHTML = `<p class="muted" style="margin:0">${esc(
+        lesson.title
+      )} — ${esc(lesson.segments[0].text)}</p>`;
+      history = [];
+      log.innerHTML = "";
+      pushMessage("bot", "Ask me about this segment. Try something it answers, then something it cannot — the second answer is the one worth watching.");
+    }
+
+    segmentSel.addEventListener("change", () => {
+      const segment = lesson.segments.find((item) => item.id === segmentSel.value);
+      document.querySelector("#ctx-panel").innerHTML = `<p class="muted" style="margin:0">${esc(
+        lesson.title
+      )} — ${esc(segment.text)}</p>`;
+    });
+
+    lessonSel.addEventListener("change", (event) => loadLesson(event.target.value));
+
+    async function ask(question) {
+      if (!question.trim()) return;
+      pushMessage("user", question);
+      const typing = document.createElement("div");
+      typing.className = "msg bot";
+      typing.innerHTML = `<span class="typing"><span></span><span></span><span></span></span>`;
+      log.appendChild(typing);
+      log.scrollTop = log.scrollHeight;
+
+      try {
+        const result = await api("/api/tutor", {
+          method: "POST",
+          body: {
+            lesson_id: lesson.id,
+            segment_id: segmentSel.value,
+            question,
+            lang: current,
+            history: history.slice(-6),
+          },
+        });
+        typing.remove();
+        const meta = [
+          chip(
+            result.provider === "sarvam" ? "Sarvam AI" : "Mock mode",
+            result.provider === "sarvam" ? "accent" : "warn"
+          ),
+          result.grounded ? chip("grounded in the lesson", "ok") : chip("outside the lesson", "warn"),
+          result.degraded ? chip("fell back offline", "warn") : "",
+        ].filter(Boolean);
+        pushMessage("bot", result.text, meta);
+        history.push({ role: "user", content: question });
+        history.push({ role: "assistant", content: result.text });
+      } catch (error) {
+        typing.remove();
+        toast("Tutor failed: " + error.message);
+      }
+    }
+
+    document.querySelector("#send-btn").addEventListener("click", () => {
+      const value = input.value;
+      input.value = "";
+      ask(value);
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        const value = input.value;
+        input.value = "";
+        ask(value);
+      }
+    });
+    document.querySelector("#simpler-btn").addEventListener("click", () =>
+      ask("Please explain this segment in simpler words.")
+    );
+    document.querySelector("#example-btn").addEventListener("click", () =>
+      ask("Give me one example of what this segment describes.")
+    );
+
+    const health = await api("/api/health");
+    document.querySelector("#mode-pill").textContent =
+      health.mode === "sarvam" ? "Live · Sarvam AI" : "Mock mode";
+
+    if (lessons.length) await loadLesson(lessons[0].id);
+  </script>
+</body>
+</html>

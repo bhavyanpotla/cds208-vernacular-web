@@ -1,0 +1,119 @@
+{
+  "id": "science-photosynthesis-01",
+  "subject": "science",
+  "grade": 7,
+  "title": {
+    "en-IN": "How plants make food",
+    "hi-IN": "पौधे भोजन कैसे बनाते हैं"
+  },
+  "summary": {
+    "en-IN": "Photosynthesis, in four short steps.",
+    "hi-IN": "प्रकाश संश्लेषण, चार छोटे चरणों में।"
+  },
+  "segments": [
+    {
+      "id": "s1",
+      "text": {
+        "en-IN": "Plants make their own food. They use sunlight, water and air to do this.",
+        "hi-IN": "पौधे अपना भोजन स्वयं बनाते हैं। इसके लिए वे सूर्य का प्रकाश, पानी और हवा का उपयोग करते हैं।"
+      },
+      "key_terms": [
+        "photosynthesis",
+        "sunlight"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": {
+        "en-IN": "The green colour of a leaf comes from chlorophyll. Chlorophyll catches sunlight and starts the process.",
+        "hi-IN": "पत्ती का हरा रंग क्लोरोफिल से आता है। क्लोरोफिल सूर्य के प्रकाश को पकड़कर यह प्रक्रिया शुरू करता है।"
+      },
+      "key_terms": [
+        "chlorophyll"
+      ]
+    },
+    {
+      "id": "s3",
+      "text": {
+        "en-IN": "The plant takes carbon dioxide from the air and gives out oxygen. The food is stored as starch.",
+        "hi-IN": "पौधा हवा से कार्बन डाइऑक्साइड लेता है और ऑक्सीजन छोड़ता है। भोजन स्टार्च के रूप में संचित रहता है।"
+      },
+      "key_terms": [
+        "carbon dioxide",
+        "oxygen",
+        "starch"
+      ]
+    }
+  ],
+  "quiz": [
+    {
+      "q": {
+        "en-IN": "What do plants need to make food?",
+        "hi-IN": "भोजन बनाने के लिए पौधों को क्या चाहिए?"
+      },
+      "options": {
+        "en-IN": [
+          "Sunlight, water and air",
+          "Only soil",
+          "Only water"
+        ],
+        "hi-IN": [
+          "सूर्य का प्रकाश, पानी और हवा",
+          "केवल मिट्टी",
+          "केवल पानी"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "All three are needed; the leaf combines them using chlorophyll.",
+        "hi-IN": "तीनों ज़रूरी हैं; पत्ती क्लोरोफिल की मदद से इन्हें मिलाती है।"
+      }
+    },
+    {
+      "q": {
+        "en-IN": "Which gas does a plant give out?",
+        "hi-IN": "पौधा कौन सी गैस बाहर छोड़ता है?"
+      },
+      "options": {
+        "en-IN": [
+          "Oxygen",
+          "Carbon dioxide",
+          "Nitrogen"
+        ],
+        "hi-IN": [
+          "ऑक्सीजन",
+          "कार्बन डाइऑक्साइड",
+          "नाइट्रोजन"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "It takes in carbon dioxide and releases oxygen.",
+        "hi-IN": "यह कार्बन डाइऑक्साइड लेता है और ऑक्सीजन छोड़ता है।"
+      }
+    },
+    {
+      "q": {
+        "en-IN": "In what form is the food stored in the plant?",
+        "hi-IN": "पौधे में भोजन किस रूप में संचित रहता है?"
+      },
+      "options": {
+        "en-IN": [
+          "Starch",
+          "Salt",
+          "Sugar water"
+        ],
+        "hi-IN": [
+          "स्टार्च",
+          "नमक",
+          "शक्कर का पानी"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "The lesson says the food is stored as starch.",
+        "hi-IN": "पाठ में लिखा है कि भोजन स्टार्च के रूप में संचित रहता है।"
+      }
+    }
+  ]
+}

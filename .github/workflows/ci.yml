@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install ruff pytest httpx
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Test
+        run: python -m pytest
+
+      - name: Boot the API and hit /api/health
+        env:
+          SARVAM_API_KEY: ""
+          VE_DB_PATH: data/ci.db
+        run: |
+          python -m uvicorn api.main:app --port 8077 &
+          sleep 6
+          curl --fail --silent http://127.0.0.1:8077/api/health | tee /dev/stderr | grep '"status":"ok"'
+          curl --fail --silent http://127.0.0.1:8077/ | grep -q "Learn in the language"

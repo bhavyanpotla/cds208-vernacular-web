@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Analytics — Vernacular Learning Platform</title>
+  <link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body class="no-js">
+  <div class="aurora" aria-hidden="true">
+    <span class="blob blob-a"></span><span class="blob blob-b"></span><span class="blob blob-c"></span>
+  </div>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="/">Vernacular</a>
+      <nav class="nav">
+        <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/learn.html" data-i18n="nav_learn">Learn</a>
+        <a href="/tutor.html" data-i18n="nav_tutor">Tutor</a>
+        <a href="/analytics.html" data-i18n="card_analytics">Analytics</a>
+        <a href="/translate.html" data-i18n="nav_translate">Translate</a>
+      </nav>
+      <div class="header-tools"><select id="lang-select" aria-label="Language"></select></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="glass hero reveal">
+      <p class="eyebrow">Phase 4 · Analytics</p>
+      <h1 data-i18n="card_analytics">Analytics</h1>
+      <p class="lede">
+        Every figure is a query over the same event log the Power BI report reads. Refresh the
+        export and the .pbix tells this story with the same numbers.
+      </p>
+      <div class="pills" id="headline-pills"></div>
+    </section>
+
+    <section class="grid cols-4 mt-2">
+      <div class="card reveal"><span class="stat-value" id="m-events">0</span><span class="stat-label">events</span></div>
+      <div class="card reveal"><span class="stat-value" id="m-translations">0</span><span class="stat-label" data-i18n="ana_translations">Translations</span></div>
+      <div class="card reveal"><span class="stat-value" id="m-cache">0%</span><span class="stat-label" data-i18n="ana_cache">Cache hit rate</span></div>
+      <div class="card reveal"><span class="stat-value" id="m-latency">0 ms</span><span class="stat-label" data-i18n="ana_latency">Average latency</span></div>
+      <div class="card reveal"><span class="stat-value" id="m-tutor">0</span><span class="stat-label" data-i18n="ana_tutor_turns">Tutor turns</span></div>
+      <div class="card reveal"><span class="stat-value" id="m-refusals">0</span><span class="stat-label" data-i18n="ana_refusals">Honest refusals</span></div>
+      <div class="card reveal"><span class="stat-value" id="m-quizzes">0</span><span class="stat-label" data-i18n="ana_quizzes">Quizzes taken</span></div>
+      <div class="card reveal"><span class="stat-value" id="m-sessions">0</span><span class="stat-label">sessions</span></div>
+    </section>
+
+    <section class="grid cols-2 mt-2">
+      <div class="reveal">
+        <p class="section-label" data-i18n="ana_per_day">Events per day</p>
+        <div class="panel"><div class="spark" id="spark"></div></div>
+      </div>
+      <div class="reveal">
+        <p class="section-label" data-i18n="ana_by_lang">Events by language</p>
+        <div class="panel"><div class="bars" id="lang-bars"></div></div>
+      </div>
+    </section>
+
+    <section class="grid cols-2 mt-2">
+      <div class="reveal">
+        <p class="section-label" data-i18n="ana_top">What fires most</p>
+        <div class="panel"><div class="bars" id="event-bars"></div></div>
+      </div>
+      <div class="reveal">
+        <p class="section-label" data-i18n="ana_struggle">Struggle list</p>
+        <div class="panel" id="struggle"><p class="muted">No terms tapped yet — open Learn and tap a term.</p></div>
+      </div>
+    </section>
+
+    <section class="mt-2 reveal">
+      <div class="spread">
+        <div>
+          <p class="section-label">Power BI export</p>
+          <p class="muted" style="margin:0">Writes four CSVs plus <code>_health.json</code> into <code>exports/</code>.</p>
+        </div>
+        <button class="btn primary" id="export-btn" data-i18n="ana_refresh">Refresh export</button>
+      </div>
+      <div class="chips mt-1" id="health-chips"></div>
+      <div class="panel" id="health-panel"><p class="muted">No export yet this session.</p></div>
+    </section>
+  </main>
+
+  <footer><p>The in-app numbers and the .pbix read the same tables, so they cannot disagree.</p></footer>
+
+  <script type="module">
+    import { boot, api, chip, esc, toast } from "/assets/app.js";
+
+    await boot("/analytics.html");
+
+    function bars(node, rows, labelKey, valueKey) {
+      const max = Math.max(...rows.map((row) => Number(row[valueKey]) || 0), 1);
+      node.innerHTML = rows.length
+        ? rows
+            .map(
+              (row) => `
+          <div class="bar-row">
+            <span class="muted">${esc(row[labelKey] ?? "unknown")}</span>
+            <span class="bar-track"><span class="bar-fill" style="width:${(Number(row[valueKey]) / max) * 100}%"></span></span>
+            <span style="text-align:right;color:var(--ink)">${row[valueKey]}</span>
+          </div>`
+            )
+            .join("")
+        : `<p class="muted">No data yet.</p>`;
+      requestAnimationFrame(() => {
+        node.querySelectorAll(".bar-fill").forEach((fill, index) => {
+          fill.style.width = fill.style.width;
+        });
+      });
+    }
+
+    function spark(node, rows) {
+      if (!rows.length) {
+        node.innerHTML = `<p class="muted">No events yet.</p>`;
+        return;
+      }
+      const max = Math.max(...rows.map((row) => Number(row.events)), 1);
+      node.innerHTML = rows
+        .map(
+          (row) =>
+            `<span class="col" title="${esc(row.day)}: ${row.events}" style="height:${Math.max(
+              (Number(row.events) / max) * 100,
+              4
+            )}%"></span>`
+        )
+        .join("");
+    }
+
+    async function load() {
+      const data = await api("/api/analytics");
+      const h = data.headline;
+
+      document.querySelector("#m-events").textContent = h.events;
+      document.querySelector("#m-translations").textContent = h.translations;
+      document.querySelector("#m-cache").textContent = `${Math.round(h.cache_hit_rate * 100)}%`;
+      document.querySelector("#m-latency").textContent = `${h.avg_latency_ms} ms`;
+      document.querySelector("#m-tutor").textContent = h.tutor_turns;
+      document.querySelector("#m-refusals").textContent = h.refusals;
+      document.querySelector("#m-quizzes").textContent = h.quizzes;
+      document.querySelector("#m-sessions").textContent = h.sessions;
+
+      document.querySelector("#headline-pills").innerHTML = [
+        chip(`${h.events} events`, "accent"),
+        chip(`${h.sessions} session${h.sessions === 1 ? "" : "s"}`, "muted"),
+        chip(`${h.learners} learner${h.learners === 1 ? "" : "s"}`, "muted"),
+      ].join("");
+
+      spark(document.querySelector("#spark"), data.per_day);
+      bars(document.querySelector("#lang-bars"), data.by_language, "language", "events");
+      bars(document.querySelector("#event-bars"), data.by_event, "event_name", "events");
+
+      const struggle = document.querySelector("#struggle");
+      struggle.innerHTML = data.struggle.length
+        ? data.struggle
+            .map(
+              (row) =>
+                `<div class="spread" style="padding:0.4rem 0;border-bottom:1px solid var(--line)">
+                  <span>${esc(row.term)}</span><span class="muted">${row.taps} taps</span>
+                </div>`
+            )
+            .join("")
+        : `<p class="muted">No terms tapped yet — open Learn and tap a term.</p>`;
+
+      if (data.health) renderHealth(data.health);
+    }
+
+    function renderHealth(health) {
+      document.querySelector("#health-chips").innerHTML = [
+        chip(`${health.rows.fact_events} event rows`, "accent"),
+        chip(`${health.duration_ms} ms`, "muted"),
+        chip(`mode: ${health.provider_mode}`, "muted"),
+        chip(`${health.event_types_fired}/${health.event_types_documented} event types fired`, "ok"),
+      ].join("");
+      const warnings = health.warnings || [];
+      document.querySelector("#health-panel").innerHTML = warnings.length
+        ? warnings.map((w) => `<p class="muted">⚠️ ${esc(w)}</p>`).join("")
+        : `<p class="muted">Health check clean — no empty tables, no unexpected nulls. Generated ${esc(health.generated_at)}.</p>`;
+    }
+
+    document.querySelector("#export-btn").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      try {
+        const health = await api("/api/export", { method: "POST" });
+        renderHealth(health);
+        toast(`Wrote ${health.rows.fact_events} event rows`);
+        load();
+      } catch (error) {
+        toast("Export failed: " + error.message);
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    load();
+    setInterval(load, 30000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Translate — Vernacular Learning Platform</title>
+  <link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body class="no-js">
+  <div class="aurora" aria-hidden="true">
+    <span class="blob blob-a"></span><span class="blob blob-b"></span><span class="blob blob-c"></span>
+  </div>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="/">Vernacular</a>
+      <nav class="nav">
+        <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/learn.html" data-i18n="nav_learn">Learn</a>
+        <a href="/tutor.html" data-i18n="nav_tutor">Tutor</a>
+        <a href="/analytics.html" data-i18n="card_analytics">Analytics</a>
+        <a href="/translate.html" data-i18n="nav_translate">Translate</a>
+      </nav>
+      <div class="header-tools"><select id="lang-select" aria-label="Language"></select></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="glass hero reveal">
+      <p class="eyebrow">Phase 1 · Translation core</p>
+      <h1 data-i18n="tr_title">Translate anything</h1>
+      <p class="lede">
+        One service, called by every surface. Memory cache, then SQLite, then the provider —
+        and every call leaves an event behind.
+      </p>
+      <div class="pills" id="tr-pills"></div>
+    </section>
+
+    <section class="mt-2" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start">
+      <div class="reveal">
+        <label class="field" for="src-lang">From</label>
+        <select id="src-lang"></select>
+        <label class="field mt-1" for="tr-text" data-i18n="tr_source_label">Type or paste text</label>
+        <textarea id="tr-text" maxlength="2000" data-i18n-ph="tr_source_label" placeholder="Type or paste a sentence…"></textarea>
+        <div class="spread mt-1">
+          <span class="muted" id="char-count">0/2000</span>
+          <button class="btn ghost" id="example-btn" data-i18n="tr_example">Try an example</button>
+        </div>
+        <button class="btn primary mt-1" id="go-btn" style="width:100%" data-i18n="tr_button">Translate</button>
+      </div>
+
+      <div class="reveal">
+        <label class="field" for="tgt-lang">To</label>
+        <select id="tgt-lang"></select>
+        <p class="field mt-1" data-i18n="tr_result">Result</p>
+        <div class="chips" id="result-chips"></div>
+        <div class="code-out" id="result-text" aria-live="polite">—</div>
+        <p class="muted mt-1" id="result-note" style="font-size:0.85rem"></p>
+      </div>
+    </section>
+
+    <section class="mt-2 reveal">
+      <p class="section-label" data-i18n="tr_recent">Recent translations</p>
+      <div class="panel" id="recent-panel"><p class="muted">Nothing yet.</p></div>
+    </section>
+  </main>
+
+  <footer><p>Latency is measured server-side, so it includes the cache lookup and the provider call.</p></footer>
+
+  <script type="module">
+    import { boot, api, chip, esc, lang, LANGS, toast } from "/assets/app.js";
+
+    await boot("/translate.html");
+    const ui = lang();
+
+    const examples = {
+      "en-IN": "The plant makes food from sunlight, water and air.",
+      "hi-IN": "पौधे सूर्य के प्रकाश, पानी और हवा से भोजन बनाते हैं।",
+      "te-IN": "మొక్క సూర్యరశ్మి, నీరు మరియు గాలి నుండి ఆహారాన్ని తయారు చేస్తుంది.",
+      "ta-IN": "தாவரம் சூரிய ஒளி, நீர் மற்றும் காற்றிலிருந்து உணவை உருவாக்குகிறது.",
+      "bn-IN": "গাছ সূর্যালোক, জল ও বাতাস থেকে খাদ্য তৈরি করে।",
+    };
+
+    const srcSel = document.querySelector("#src-lang");
+    const tgtSel = document.querySelector("#tgt-lang");
+    const options = LANGS.map((l) => `<option value="${l.code}">${l.native}</option>`).join("");
+    srcSel.innerHTML = options;
+    tgtSel.innerHTML = options;
+    srcSel.value = ui;
+    tgtSel.value = ui === "hi-IN" ? "te-IN" : "hi-IN";
+
+    const text = document.querySelector("#tr-text");
+    text.addEventListener("input", () => {
+      document.querySelector("#char-count").textContent = `${text.value.length}/2000`;
+    });
+
+    document.querySelector("#example-btn").addEventListener("click", () => {
+      text.value = examples[srcSel.value] || examples["en-IN"];
+      text.dispatchEvent(new Event("input"));
+    });
+
+    async function refreshRecent() {
+      try {
+        const rows = await api("/api/translate/recent?limit=6");
+        const panel = document.querySelector("#recent-panel");
+        panel.innerHTML = rows.length
+          ? rows
+              .map(
+                (row) => `
+            <div style="padding:0.55rem 0;border-bottom:1px solid var(--line)">
+              <div class="chips" style="margin-bottom:0.35rem">
+                ${chip(`${row.source_lang} → ${row.target_lang}`, "muted")}
+                ${chip(row.provider, row.provider === "sarvam" ? "accent" : "warn")}
+                ${chip(`${row.latency_ms} ms`, "muted")}
+              </div>
+              <div class="muted" style="font-size:0.85rem">${esc(row.output_text).slice(0, 140)}</div>
+            </div>`
+              )
+              .join("")
+          : `<p class="muted">Nothing yet — translate a sentence above.</p>`;
+      } catch (error) {
+        console.warn(error);
+      }
+    }
+
+    document.querySelector("#go-btn").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      const value = text.value.trim();
+      if (!value) {
+        toast("Type something first.");
+        return;
+      }
+      button.disabled = true;
+      try {
+        const result = await api("/api/translate", {
+          method: "POST",
+          body: { text: value, source: srcSel.value, target: tgtSel.value },
+        });
+        const provider = result.provider;
+        document.querySelector("#result-chips").innerHTML = [
+          chip(
+            provider === "cache" ? "served from cache" : provider === "sarvam" ? "Sarvam AI" : provider === "mock" ? "Mock mode" : provider,
+            provider === "sarvam" ? "accent" : provider === "cache" ? "ok" : "warn"
+          ),
+          chip(`${result.latency_ms} ms`, "muted"),
+          chip(`${srcSel.value} → ${tgtSel.value}`, "muted"),
+          result.degraded ? chip("degraded to mock", "warn") : "",
+        ].join("");
+        document.querySelector("#result-text").textContent = result.text;
+        document.querySelector("#result-note").textContent =
+          provider === "mock"
+            ? "No API key configured, so this is a labelled mock. Add SARVAM_API_KEY and the same click returns real text."
+            : provider === "cache"
+            ? "This pair was already translated, so no provider call was made. The latency shown is the original call's."
+            : "";
+        refreshRecent();
+      } catch (error) {
+        toast("Translation failed: " + error.message);
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    document.querySelector("#tr-pills").innerHTML = [
+      chip("cached", "muted"),
+      chip("logged", "muted"),
+      chip("1000 chars / request", "muted"),
+    ].join("");
+
+    refreshRecent();
+  </script>
+</body>
+</html>

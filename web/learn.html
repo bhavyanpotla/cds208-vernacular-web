@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Learn — Vernacular Learning Platform</title>
+  <link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body class="no-js">
+  <div class="aurora" aria-hidden="true">
+    <span class="blob blob-a"></span><span class="blob blob-b"></span><span class="blob blob-c"></span>
+  </div>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="/">Vernacular</a>
+      <nav class="nav">
+        <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/learn.html" data-i18n="nav_learn">Learn</a>
+        <a href="/tutor.html" data-i18n="nav_tutor">Tutor</a>
+        <a href="/analytics.html" data-i18n="card_analytics">Analytics</a>
+        <a href="/translate.html" data-i18n="nav_translate">Translate</a>
+      </nav>
+      <div class="header-tools"><select id="lang-select" aria-label="Language"></select></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="glass hero reveal">
+      <p class="eyebrow">Phase 2 · Vernacular reader</p>
+      <h1 data-i18n="learn_lessons">Lessons</h1>
+      <p class="lede">
+        Read a lesson in your own script. Tap any term for its meaning — authored in English
+        and Hindi, filled by the translation service for the rest.
+      </p>
+      <div class="pills" id="lesson-pills"></div>
+    </section>
+
+    <section class="grid cols-2 mt-2">
+      <div class="reveal">
+        <label class="field" for="lesson-select" data-i18n="learn_lessons">Lessons</label>
+        <select id="lesson-select"></select>
+      </div>
+      <div class="reveal">
+        <p class="field">Reading in</p>
+        <div class="panel" style="padding:0.7rem 1rem"><span id="read-lang">English</span> · <span class="muted" id="read-script">Latin</span></div>
+      </div>
+    </section>
+
+    <section class="mt-2" style="display:grid;grid-template-columns:3fr 2fr;gap:1.5rem;align-items:start">
+      <div id="reader">
+        <p class="muted">Loading lesson…</p>
+      </div>
+      <aside class="reveal" style="position:sticky;top:5.5rem">
+        <p class="section-label" data-i18n="learn_glossary">Glossary</p>
+        <div class="panel" id="gloss-panel">
+          <p class="muted" data-i18n="learn_tap">Tap a term to see its meaning</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="mt-2 reveal">
+      <p class="section-label" data-i18n="learn_quiz">Quiz</p>
+      <div class="panel" id="quiz-panel">
+        <p class="muted">Choose a lesson to load its quiz.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Every tap and every answer is an event. <a href="/analytics.html">See the log</a></p>
+  </footer>
+
+  <script type="module">
+    import { boot, api, chip, esc, lang, LANGS, toast, reveal, tilt } from "/assets/app.js";
+
+    await boot("/learn.html");
+
+    const current = lang();
+    const langInfo = LANGS.find((l) => l.code === current) || LANGS[0];
+    document.querySelector("#read-lang").textContent = langInfo.native;
+    document.querySelector("#read-script").textContent = langInfo.script;
+
+    const lessonSelect = document.querySelector("#lesson-select");
+    let lesson = null;
+
+    const lessons = await api(`/api/lessons?lang=${current}`);
+    lessonSelect.innerHTML = lessons
+      .map((item) => `<option value="${esc(item.id)}">${esc(item.title)}</option>`)
+      .join("");
+    document.querySelector("#lesson-pills").innerHTML = [
+      chip(`${lessons.length} lessons`, "accent"),
+      chip(`${langInfo.native}`, "muted"),
+      chip("tap to gloss", "muted"),
+    ].join("");
+
+    function renderGloss(entry) {
+      const panel = document.querySelector("#gloss-panel");
+      if (!entry || !entry.meaning) {
+        panel.innerHTML = `<p class="muted">No gloss for “${esc(entry.term)}”.</p>`;
+        return;
+      }
+      panel.innerHTML = `
+        <div class="chips">
+          ${chip(entry.term, "accent")}
+          ${chip(entry.authored === "yes" ? "authored" : "translated", entry.authored === "yes" ? "ok" : "muted")}
+        </div>
+        <p>${esc(entry.meaning)}</p>
+        <p class="muted" style="font-size:0.82rem">${
+          entry.authored === "yes"
+            ? "Hand-written definition."
+            : "Filled by the translation service and cached — the next reader gets it instantly."
+        }</p>`;
+    }
+
+    function renderLesson(data) {
+      lesson = data;
+      const reader = document.querySelector("#reader");
+      reader.innerHTML = data.segments
+        .map(
+          (segment, index) => `
+          <article class="reveal" style="margin-bottom:1.6rem">
+            <p class="section-label">Segment ${index + 1}</p>
+            <div class="segment">${esc(segment.text)}</div>
+            ${
+              segment.terms.length
+                ? `<div class="terms">${segment.terms
+                    .map(
+                      (term) =>
+                        `<button class="btn term" data-term="${esc(term)}" data-seg="${esc(segment.id)}">${esc(term)}</button>`
+                    )
+                    .join("")}</div>`
+                : ""
+            }
+          </article>`
+        )
+        .join("");
+
+      reader.querySelectorAll("[data-term]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          button.disabled = true;
+          try {
+            const entry = await api("/api/gloss", {
+              method: "POST",
+              body: { term: button.dataset.term, lang: current },
+            });
+            renderGloss(entry);
+          } catch (error) {
+            toast("Gloss failed: " + error.message);
+          } finally {
+            button.disabled = false;
+          }
+        });
+      });
+
+      const quizPanel = document.querySelector("#quiz-panel");
+      quizPanel.innerHTML = `
+        <div class="spread" style="margin-bottom:1rem">
+          <strong style="color:var(--ink)">${esc(data.title)}</strong>
+          <span class="muted">${data.quiz.length} questions</span>
+        </div>
+        <form id="quiz-form">
+          ${data.quiz
+            .map(
+              (question) => `
+            <div class="quiz-q">
+              <p>${question.index + 1}. ${esc(question.q)}</p>
+              ${question.options
+                .map(
+                  (option, index) => `
+                <label class="opt">
+                  <input type="radio" name="q${question.index}" value="${index}" />
+                  <span>${esc(option)}</span>
+                </label>`
+                )
+                .join("")}
+            </div>`
+            )
+            .join("")}
+          <button class="btn primary" type="submit" data-i18n="learn_check">Check answers</button>
+        </form>
+        <div id="quiz-result" class="mt-1"></div>`;
+
+      quizPanel.querySelector("#quiz-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const answers = data.quiz.map((question) => {
+          const picked = quizPanel.querySelector(`input[name="q${question.index}"]:checked`);
+          return picked ? Number(picked.value) : null;
+        });
+        try {
+          const result = await api("/api/quiz", {
+            method: "POST",
+            body: { lesson_id: data.id, answers, lang: current },
+          });
+          const out = quizPanel.querySelector("#quiz-result");
+          out.innerHTML = `
+            <div class="chips">
+              ${chip(`${result.correct}/${result.total}`, result.passed ? "ok" : "warn")}
+              ${chip(`${result.percent}%`, "muted")}
+              ${chip(result.passed ? "quiz_passed" : "completed", result.passed ? "ok" : "muted")}
+            </div>
+            ${result.explanations
+              .map(
+                (item) =>
+                  `<p class="muted" style="font-size:0.88rem">${item.index + 1}. ${esc(
+                    item.explain
+                  )} <em>(${esc(item.answer)})</em></p>`
+              )
+              .join("")}`;
+          toast(result.passed ? "Passed — logged as quiz_passed" : "Logged as completed");
+        } catch (error) {
+          toast("Quiz failed: " + error.message);
+        }
+      });
+
+      reveal();
+      tilt();
+    }
+
+    async function loadLesson(id) {
+      document.querySelector("#reader").innerHTML = `<p class="muted">Loading…</p>`;
+      const data = await api(`/api/lessons/${id}?lang=${current}`);
+      renderLesson(data);
+      document.querySelector("#gloss-panel").innerHTML =
+        `<p class="muted" data-i18n="learn_tap">Tap a term to see its meaning</p>`;
+    }
+
+    lessonSelect.addEventListener("change", (event) => loadLesson(event.target.value));
+    if (lessons.length) await loadLesson(lessons[0].id);
+  </script>
+</body>
+</html>

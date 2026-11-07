@@ -1,0 +1,70 @@
+{
+  "photosynthesis": {
+    "en-IN": "The process a plant uses to make food from sunlight, water and air.",
+    "hi-IN": "वह प्रक्रिया जिससे पौधा सूर्य के प्रकाश, पानी और हवा से भोजन बनाता है।"
+  },
+  "sunlight": {
+    "en-IN": "Light that comes from the sun.",
+    "hi-IN": "सूर्य से आने वाला प्रकाश।"
+  },
+  "chlorophyll": {
+    "en-IN": "The green substance in leaves that catches sunlight.",
+    "hi-IN": "पत्तियों में मौजूद हरा पदार्थ जो सूर्य का प्रकाश पकड़ता है।"
+  },
+  "carbon dioxide": {
+    "en-IN": "A gas in the air that plants take in to make food.",
+    "hi-IN": "हवा में मौजूद गैस जिसे पौधे भोजन बनाने के लिए लेते हैं।"
+  },
+  "oxygen": {
+    "en-IN": "A gas that plants give out and animals need to breathe.",
+    "hi-IN": "वह गैस जो पौधे छोड़ते हैं और जीवों को साँस लेने के लिए चाहिए।"
+  },
+  "starch": {
+    "en-IN": "The form in which a plant stores the food it makes.",
+    "hi-IN": "पौधा जो भोजन बनाता है उसे इसी रूप में संचित करता है।"
+  },
+  "evaporation": {
+    "en-IN": "Water changing into vapour because of heat.",
+    "hi-IN": "गर्मी से पानी का वाष्प में बदलना।"
+  },
+  "vapour": {
+    "en-IN": "Water in gas form.",
+    "hi-IN": "गैस रूप में पानी।"
+  },
+  "condensation": {
+    "en-IN": "Vapour cooling and turning back into tiny water drops.",
+    "hi-IN": "वाष्प का ठंडा होकर छोटी बूँदों में बदलना।"
+  },
+  "precipitation": {
+    "en-IN": "Water falling from clouds as rain.",
+    "hi-IN": "बादलों से वर्षा के रूप में पानी का गिरना।"
+  },
+  "fraction": {
+    "en-IN": "A number that shows part of a whole.",
+    "hi-IN": "वह संख्या जो पूर्ण का भाग दिखाती है।"
+  },
+  "numerator": {
+    "en-IN": "The top number of a fraction; it counts the parts taken.",
+    "hi-IN": "भिन्न की ऊपर की संख्या; यह लिए गए भाग गिनती है।"
+  },
+  "denominator": {
+    "en-IN": "The bottom number of a fraction; it counts the equal parts in the whole.",
+    "hi-IN": "भिन्न की नीचे की संख्या; यह पूर्ण के बराबर भाग गिनती है।"
+  },
+  "vibration": {
+    "en-IN": "A fast back-and-forth movement.",
+    "hi-IN": "तेज़ आगे-पीछे होने वाली गति।"
+  },
+  "sound": {
+    "en-IN": "What we hear when something vibrates.",
+    "hi-IN": "कंपन होने पर जो हम सुनते हैं।"
+  },
+  "wave": {
+    "en-IN": "A moving pattern of vibration that carries sound or light.",
+    "hi-IN": "कंपन का चलता हुआ पैटर्न जो ध्वनि या प्रकाश ले जाता है।"
+  },
+  "medium": {
+    "en-IN": "The material something travels through, such as air, water or a solid.",
+    "hi-IN": "वह पदार्थ जिससे होकर कुछ चलता है, जैसे हवा, पानी या ठोस।"
+  }
+}

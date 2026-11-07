@@ -1,0 +1,117 @@
+{
+  "id": "science-sound-04",
+  "subject": "science",
+  "grade": 6,
+  "title": {
+    "en-IN": "How sound travels",
+    "hi-IN": "ध्वनि कैसे चलती है"
+  },
+  "summary": {
+    "en-IN": "Vibration, waves, and why sound needs a medium.",
+    "hi-IN": "कंपन, तरंगें, और ध्वनि को माध्यम क्यों चाहिए।"
+  },
+  "segments": [
+    {
+      "id": "s1",
+      "text": {
+        "en-IN": "Sound is made when something vibrates. A stretched rubber band makes a sound when you pluck it.",
+        "hi-IN": "जब कोई वस्तु कंपन करती है तो ध्वनि उत्पन्न होती है। खींचे हुए रबर बैंड को छोड़ने पर ध्वनि आती है।"
+      },
+      "key_terms": [
+        "vibration",
+        "sound"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": {
+        "en-IN": "The vibration travels through the air as waves and reaches our ears.",
+        "hi-IN": "यह कंपन हवा में तरंगों के रूप में चलती है और हमारे कानों तक पहुँचती है।"
+      },
+      "key_terms": [
+        "wave"
+      ]
+    },
+    {
+      "id": "s3",
+      "text": {
+        "en-IN": "Sound travels faster in water and in solids than in air. It cannot travel through empty space.",
+        "hi-IN": "ध्वनि हवा की तुलना में पानी और ठोस पदार्थों में अधिक तेज़ चलती है। यह खाली स्थान से नहीं चल सकती।"
+      },
+      "key_terms": [
+        "medium"
+      ]
+    }
+  ],
+  "quiz": [
+    {
+      "q": {
+        "en-IN": "Sound is produced when an object…",
+        "hi-IN": "ध्वनि तब उत्पन्न होती है जब वस्तु…"
+      },
+      "options": {
+        "en-IN": [
+          "vibrates",
+          "gets hot",
+          "is still"
+        ],
+        "hi-IN": [
+          "कंपन करती है",
+          "गरम होती है",
+          "स्थिर रहती है"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "Vibration is what makes sound.",
+        "hi-IN": "कंपन से ही ध्वनि बनती है।"
+      }
+    },
+    {
+      "q": {
+        "en-IN": "Can sound travel through empty space?",
+        "hi-IN": "क्या ध्वनि खाली स्थान से चल सकती है?"
+      },
+      "options": {
+        "en-IN": [
+          "No, it needs a medium",
+          "Yes, very fast",
+          "Only at night"
+        ],
+        "hi-IN": [
+          "नहीं, उसे माध्यम चाहिए",
+          "हाँ, बहुत तेज़",
+          "केवल रात में"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "With no particles to vibrate, there is no sound.",
+        "hi-IN": "कंपन करने के लिए कण नहीं हैं, इसलिए ध्वनि नहीं होगी।"
+      }
+    },
+    {
+      "q": {
+        "en-IN": "Where does sound travel fastest?",
+        "hi-IN": "ध्वनि सबसे तेज़ कहाँ चलती है?"
+      },
+      "options": {
+        "en-IN": [
+          "In solids",
+          "In air",
+          "In empty space"
+        ],
+        "hi-IN": [
+          "ठोस पदार्थों में",
+          "हवा में",
+          "खाली स्थान में"
+        ]
+      },
+      "answer_index": 0,
+      "explain": {
+        "en-IN": "Particles are closest together in solids, so sound moves fastest there.",
+        "hi-IN": "ठोस में कण सबसे पास होते हैं, इसलिए ध्वनि वहाँ सबसे तेज़ चलती है।"
+      }
+    }
+  ]
+}

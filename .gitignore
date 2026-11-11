@@ -27,3 +27,7 @@ dist/
 .DS_Store
 .idea/
 .vscode/
+
+# Corpus data: licence unverified, so it is built locally, not redistributed
+data/mundari_pairs.tsv
+data/classroom_candidates.tsv

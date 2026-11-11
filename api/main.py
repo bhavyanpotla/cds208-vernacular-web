@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field
 from agents import coach, phrases
 from agents import tutor as tutor_agent
 from api import context
+from core import bridge as bridge_engine
 from core import config, db, events, export, lessons, quiz
 from core import translate as translator
 from core.i18n import UI_STRINGS, t
@@ -76,6 +77,10 @@ class TutorIn(BaseModel):
     question: str = Field(min_length=1, max_length=1000)
     lang: str = "en-IN"
     history: list[dict[str, str]] = Field(default_factory=list)
+
+
+class BridgeIn(BaseModel):
+    text: str = Field(min_length=1, max_length=500)
 
 
 class QuizIn(BaseModel):
@@ -252,6 +257,28 @@ def ask_tutor(payload: TutorIn) -> dict[str, Any]:
         history=payload.history[-6:],
         user_id=learner_id(),
     )
+
+
+# ----------------------------------------------------------- language bridge
+
+
+@app.post("/api/bridge")
+def bridge(payload: BridgeIn) -> dict[str, Any]:
+    """Tiered Hindi → Mundari lookup. The tier and confidence are the product."""
+    result = bridge_engine.lookup(payload.text)
+    events.log_event(
+        "bridge_lookup",
+        tier=result.tier,
+        confidence=result.confidence,
+        verified=result.verified,
+        chars=len(payload.text),
+    )
+    return result.as_dict()
+
+
+@app.get("/api/bridge/stats")
+def bridge_stats() -> dict[str, Any]:
+    return bridge_engine.coverage()
 
 
 # ------------------------------------------------------------- progress/coach

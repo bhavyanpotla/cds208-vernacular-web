@@ -103,6 +103,32 @@ terms. English and Hindi are hand-authored; Tamil, Telugu and Bengali are a cont
 gap the translation service closes on first read and caches in SQLite — which is why
 the gloss card tells you whether a definition was authored or translated.
 
+## Language bridge (Hindi → Mundari)
+
+`core/bridge.py` answers in tiers and says which tier answered:
+
+| tier | source | confidence |
+|---|---|---|
+| 1 `authored` | a hand-written classroom phrase, verified or draft | 0.98 verified · 0.60 draft |
+| 2 `corpus` | exact match in the parallel corpus | 0.85 |
+| 3 `approximate` | best partial overlap in the corpus, labelled with the overlap % | 0.40 + 0.35 × overlap |
+| 4 `none` | no match — refuses instead of inventing | 0.00 |
+
+The corpus is general-domain (news, legal, administrative): only ~5.8% of its
+17,729 rows touch classroom vocabulary, so tier 1 is what makes the product
+usable and the corpus is the fallback, not the engine. `data/classroom_targets.tsv`
+is a 30-row list of real classroom instructions waiting for Mundari — fill it and
+the authored tier starts answering.
+
+Endpoints: `POST /api/bridge` and `GET /api/bridge/stats`. Coverage counts are
+printed, never rounded up: `0 verified classroom phrases · 17729 corpus sentences
+(unverified)` is the honest current state.
+
+Tooling: `scripts/build_corpus.py` normalises a raw parallel TSV into the
+nine-column schema, `scripts/validate_corpus.py` checks it (exit 0/1), and
+`scripts/bench_bridge.py` prints tier distribution and latency. Provenance, licence
+status and every dropped row are documented in `docs/corpus-provenance.md`.
+
 ## Analytics
 
 Every action appends to `events`. `analytics.html` queries that table, and

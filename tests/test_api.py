@@ -127,3 +127,28 @@ def test_static_frontend_is_served(client):
     page = client.get("/")
     assert page.status_code == 200
     assert "Learn in the language you think in" in page.text
+
+
+def test_bridge_endpoint_returns_a_tier(client):
+    payload = client.post("/api/bridge", json={"text": "वे भी कमजोर पड़ रहे हैं"}).json()
+    assert payload["tier"] in {"authored", "corpus", "approximate", "none"}
+    assert 0.0 <= payload["confidence"] <= 1.0
+    assert "label" in payload and "verified" in payload
+
+
+def test_bridge_refuses_instead_of_inventing(client):
+    payload = client.post("/api/bridge", json={"text": "मुझे क्रिकेट विश्व कप कब है"}).json()
+    assert payload["tier"] == "none"
+    assert payload["text"] == ""
+
+
+def test_phrase_library_leads_with_classroom_targets(client):
+    rows = client.get("/api/bridge/phrases?limit=10").json()
+    assert rows, "phrase library must not be empty"
+    assert rows[0]["id"].startswith("TGT-"), "targets must come before corpus-seeded rows"
+
+
+def test_bridge_stats_reports_real_coverage(client):
+    stats = client.get("/api/bridge/stats").json()
+    assert "claim" in stats
+    assert "verified" in stats["claim"]

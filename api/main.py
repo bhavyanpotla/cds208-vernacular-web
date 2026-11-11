@@ -276,6 +276,35 @@ def bridge(payload: BridgeIn) -> dict[str, Any]:
     return result.as_dict()
 
 
+@app.get("/api/bridge/phrases")
+def bridge_phrases(limit: int = 40) -> list[dict[str, Any]]:
+    """The phrase library the teacher taps when speaking is not an option."""
+    from core.bridge import AUTHORED_HEADER, AUTHORED_PATH, _read_tsv
+
+    # targets first: those are real classroom instructions. The authored sheet is
+    # corpus-seeded, so its rows read like news until a speaker rewrites them.
+    targets_path = AUTHORED_PATH.parent / "classroom_targets.tsv"
+    rows = _read_tsv(targets_path, AUTHORED_HEADER)
+    rows += _read_tsv(AUTHORED_PATH, AUTHORED_HEADER)
+    seen: set[str] = set()
+    out: list[dict[str, Any]] = []
+    for row in rows:
+        key = row["hindi"].strip()
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        out.append(
+            {
+                "id": row["id"],
+                "hindi": row["hindi"],
+                "english": row.get("english", ""),
+                "has_mundari": bool(row["mundari"].strip()),
+                "verified": bool(row["verified_by"].strip()),
+            }
+        )
+    return out[:limit]
+
+
 @app.get("/api/bridge/stats")
 def bridge_stats() -> dict[str, Any]:
     return bridge_engine.coverage()

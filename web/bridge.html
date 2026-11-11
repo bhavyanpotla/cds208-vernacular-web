@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bridge console — ETA Pro</title>
+  <meta name="description" content="Hindi to Mundari classroom console: speak or type, get a tiered answer with an honest confidence label, project it to the class." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Sora:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Console styling: the label palette, but tuned for a projector in daylight —
+       bigger targets, stronger contrast, no decoration that competes with text. */
+    :root {
+      --ground: #0a0c0e; --ground-2: #101317;
+      --ink: #ede7dc; --ink-2: #b9bec0; --muted: #7d8489;
+      --amber: #e8913c; --teal: #2e6b72;
+      --ok: #4fb286; --warn: #e8913c; --bad: #c4544a;
+      --hair: rgba(237, 231, 220, 0.13); --hair-2: rgba(237, 231, 220, 0.26);
+      --display: "Syne", system-ui, sans-serif;
+      --text: "Sora", "Noto Sans Devanagari", system-ui, sans-serif;
+      --pad: clamp(16px, 3vw, 40px);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--ground); color: var(--ink);
+      font-family: var(--text); font-size: 15px; line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    header.bar {
+      display: flex; align-items: center; gap: 22px; height: 58px;
+      padding: 0 var(--pad); border-bottom: 1px solid var(--hair);
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(10, 12, 14, 0.86); backdrop-filter: blur(14px);
+    }
+    .mark { font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: -0.02em; }
+    .mark i { font-style: normal; color: var(--amber); }
+    nav { display: flex; gap: 18px; margin-left: auto; }
+    nav a {
+      font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2);
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a[aria-current] { color: var(--amber); }
+    main { padding: var(--pad); max-width: 1280px; margin: 0 auto; }
+    .lede { color: var(--ink-2); max-width: 62ch; margin: 0 0 22px; }
+    .label {
+      font-size: 10.5px; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--muted); margin: 0 0 8px;
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 3vw, 32px); align-items: start; }
+    .panel { border: 1px solid var(--hair); border-radius: 4px; background: var(--ground-2); padding: 18px; }
+    textarea, input[type="text"] {
+      width: 100%; min-height: 44px; padding: 12px 14px; border-radius: 4px;
+      border: 1px solid var(--hair-2); background: #0c0f12; color: var(--ink);
+      font: inherit; font-size: 16px; resize: vertical;
+    }
+    textarea { min-height: 96px; }
+    textarea:focus, input:focus { outline: 2px solid var(--amber); outline-offset: 1px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    button {
+      font: inherit; font-weight: 500; font-size: 13px; letter-spacing: 0.06em;
+      text-transform: uppercase; min-height: 44px; padding: 0 18px; border-radius: 4px;
+      border: 1px solid var(--hair-2); background: transparent; color: var(--ink); cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    button:hover { border-color: var(--amber); color: var(--amber); }
+    button.primary { background: var(--amber); border-color: var(--amber); color: #17120c; font-weight: 600; }
+    button.primary:hover { background: #f0a05a; color: #17120c; }
+    button.rec { border-color: var(--bad); color: #e88b83; }
+    button[disabled] { opacity: 0.45; cursor: not-allowed; }
+    .result {
+      min-height: 190px; border: 1px solid var(--hair-2); border-radius: 4px;
+      padding: 20px; display: flex; flex-direction: column; justify-content: center; gap: 10px;
+      background: #0c0f12;
+    }
+    .result .big {
+      font-family: "Noto Sans Devanagari", var(--display); font-size: clamp(24px, 3.4vw, 40px);
+      line-height: 1.25; letter-spacing: -0.01em; word-break: break-word;
+    }
+    .result.empty .big { color: var(--muted); font-size: 18px; font-family: var(--text); }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 4px 9px; border-radius: 999px; border: 1px solid var(--hair-2); color: var(--ink-2);
+    }
+    .chip.ok { color: #8fdcb6; border-color: rgba(79, 178, 134, 0.5); }
+    .chip.warn { color: #f0b374; border-color: rgba(232, 145, 60, 0.5); }
+    .chip.bad { color: #e39b93; border-color: rgba(196, 84, 74, 0.55); }
+    .chip.tier1 { color: #8fdcb6; border-color: rgba(79, 178, 134, 0.5); }
+    .chip.tier2 { color: #9fd6dd; border-color: rgba(46, 107, 114, 0.8); }
+    .chip.tier3 { color: #f0b374; border-color: rgba(232, 145, 60, 0.5); }
+    .chip.tier4 { color: #e39b83; border-color: rgba(196, 84, 74, 0.55); }
+    .meta { font-size: 12px; color: var(--muted); margin: 0; }
+    .phrases { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; margin-top: 10px; }
+    .phrase {
+      text-align: left; text-transform: none; letter-spacing: 0; font-size: 14px;
+      min-height: 0; padding: 10px 12px; display: flex; justify-content: space-between; gap: 12px;
+    }
+    .phrase small { color: var(--muted); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .phrase.unfilled { opacity: 0.62; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 10px 0; border-bottom: 1px solid var(--hair); vertical-align: top; }
+    th { font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+    code { font-family: ui-monospace, monospace; font-size: 12.5px; color: #c9d2d6; }
+    .note { border-left: 2px solid var(--teal); padding-left: 12px; color: var(--ink-2); font-size: 13px; margin: 14px 0 0; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } nav { display: none; } }
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <a class="mark" href="/">ETA PRO<i>.</i></a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/learn.html">Learn</a>
+      <a href="/bridge.html" aria-current="page">Bridge</a>
+      <a href="/tutor.html">Tutor</a>
+      <a href="/analytics.html">Analytics</a>
+    </nav>
+  </header>
+
+  <main>
+    <p class="label">Classroom bridge — Hindi to Mundari</p>
+    <h1 style="font-family:var(--display);font-weight:700;font-size:clamp(24px,3.4vw,40px);letter-spacing:-0.03em;margin:0 0 10px">
+      Say it in Hindi. Show it in Mundari.
+    </h1>
+    <p class="lede">
+      Every answer says which tier produced it and how much it should be trusted. A
+      verified classroom phrase is not the same thing as a sentence found in a corpus,
+      and the label never pretends otherwise.
+    </p>
+
+    <div class="grid">
+      <section class="panel">
+        <p class="label">Teacher input</p>
+        <div class="row" style="margin-bottom:10px">
+          <button id="mic" class="rec">● Speak Hindi</button>
+          <button id="clear">Clear</button>
+        </div>
+        <textarea id="input" placeholder="आज हम गिनती सीखेंगे"></textarea>
+        <div class="row" style="margin-top:12px">
+          <button id="go" class="primary">Translate &amp; project</button>
+          <span class="meta" id="speech-note"></span>
+        </div>
+
+        <p class="label" style="margin-top:22px">Phrase library</p>
+        <p class="meta">Tap a phrase to load it. <span id="lib-count"></span></p>
+        <div class="phrases" id="phrases"></div>
+      </section>
+
+      <section>
+        <div class="panel">
+          <p class="label">Projected to the class</p>
+          <div class="result empty" id="result">
+            <div class="big">The Mundari appears here, large enough to read from the back row.</div>
+          </div>
+          <div class="chips" id="chips" style="margin-top:12px"></div>
+          <p class="meta" id="detail" style="margin-top:10px"></p>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <p class="label">What the tiers mean</p>
+          <table>
+            <tr><th>Tier</th><th>Source</th><th>Trust</th></tr>
+            <tr><td><span class="chip tier1">1</span></td><td>Hand-written classroom phrase</td><td>0.98 verified · 0.60 draft</td></tr>
+            <tr><td><span class="chip tier2">2</span></td><td>Exact match in the corpus</td><td>0.85, attested not verified</td></tr>
+            <tr><td><span class="chip tier3">3</span></td><td>Closest sentence, partial overlap</td><td>shown with the overlap %</td></tr>
+            <tr><td><span class="chip tier4">4</span></td><td>Nothing close enough</td><td>refuses, states what it searched</td></tr>
+          </table>
+          <p class="note" id="coverage">Loading coverage…</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module">
+    const $ = (sel) => document.querySelector(sel);
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        headers: { "Content-Type": "application/json" },
+        ...options,
+        body: options.body ? JSON.stringify(options.body) : undefined,
+      });
+      if (!response.ok) throw new Error(`${response.status}`);
+      return response.json();
+    }
+
+    const TIER_LABEL = {
+      authored: "tier 1 · authored",
+      corpus: "tier 2 · corpus",
+      approximate: "tier 3 · approximate",
+      none: "tier 4 · no match",
+    };
+    const TIER_CLASS = { authored: "tier1", corpus: "tier2", approximate: "tier3", none: "tier4" };
+
+    function render(result) {
+      const box = $("#result");
+      const chips = $("#chips");
+      const detail = $("#detail");
+
+      if (!result.text) {
+        box.classList.add("empty");
+        box.innerHTML = `<div class="big">${result.label === "empty input"
+          ? "Type or speak something first."
+          : "No match — this console will not invent a translation."}</div>`;
+      } else {
+        box.classList.remove("empty");
+        box.innerHTML = `<div class="big">${result.text}</div>`;
+      }
+
+      chips.innerHTML = [
+        `<span class="chip ${TIER_CLASS[result.tier]}">${TIER_LABEL[result.tier]}</span>`,
+        `<span class="chip ${result.verified ? "ok" : "warn"}">confidence ${result.confidence.toFixed(2)}</span>`,
+        result.verified ? `<span class="chip ok">speaker-verified</span>` : `<span class="chip warn">not verified</span>`,
+        result.matched_id ? `<span class="chip">${result.matched_id}</span>` : "",
+      ].join("");
+
+      detail.textContent = result.text
+        ? `${result.note || ""}${result.matched_hindi ? ` · matched: “${result.matched_hindi}”` : ""}`
+        : result.note || "";
+    }
+
+    async function translate(text) {
+      if (!text.trim()) return;
+      $("#go").disabled = true;
+      try {
+        render(await api("/api/bridge", { method: "POST", body: { text } }));
+      } catch (error) {
+        $("#detail").textContent = "API unreachable: " + error.message;
+      } finally {
+        $("#go").disabled = false;
+      }
+    }
+
+    $("#go").addEventListener("click", () => translate($("#input").value));
+    $("#input").addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) translate($("#input").value);
+    });
+    $("#clear").addEventListener("click", () => {
+      $("#input").value = "";
+      $("#result").className = "result empty";
+      $("#result").innerHTML = `<div class="big">The Mundari appears here, large enough to read from the back row.</div>`;
+      $("#chips").innerHTML = "";
+      $("#detail").textContent = "";
+    });
+
+    /* ---- speech: honest about what it needs ---- */
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const micButton = $("#mic");
+    const note = $("#speech-note");
+    if (!Recognition) {
+      micButton.disabled = true;
+      note.textContent = "This browser has no speech API — type instead.";
+    } else {
+      note.textContent = "Chrome's recognition is cloud-based: it needs a connection.";
+      const recognition = new Recognition();
+      recognition.lang = "hi-IN";
+      recognition.interimResults = false;
+      let listening = false;
+      micButton.addEventListener("click", () => {
+        if (listening) { recognition.stop(); return; }
+        recognition.start();
+      });
+      recognition.addEventListener("start", () => {
+        listening = true;
+        micButton.textContent = "● Listening…";
+        micButton.disabled = false;
+      });
+      recognition.addEventListener("result", (event) => {
+        const text = event.results[0][0].transcript;
+        $("#input").value = text;
+        translate(text);
+      });
+      recognition.addEventListener("end", () => {
+        listening = false;
+        micButton.textContent = "● Speak Hindi";
+      });
+      recognition.addEventListener("error", () => {
+        listening = false;
+        micButton.textContent = "● Speak Hindi";
+        note.textContent = "Microphone blocked or offline — type instead.";
+      });
+    }
+
+    /* ---- phrase library + coverage ---- */
+    try {
+      const phrases = await api("/api/bridge/phrases?limit=40");
+      $("#lib-count").textContent =
+        `${phrases.filter((p) => p.has_mundari).length} of ${phrases.length} have Mundari`;
+      $("#phrases").innerHTML = phrases
+        .map(
+          (phrase) => `<button class="phrase ${phrase.has_mundari ? "" : "unfilled"}"
+             data-hindi="${phrase.hindi.replace(/"/g, "&quot;")}">
+             <span>${phrase.hindi}</span>
+             <small>${phrase.has_mundari ? (phrase.verified ? "verified" : "draft") : "to fill"}</small>
+           </button>`
+        )
+        .join("");
+      document.querySelectorAll(".phrase").forEach((button) => {
+        button.addEventListener("click", () => {
+          $("#input").value = button.dataset.hindi;
+          translate(button.dataset.hindi);
+        });
+      });
+    } catch (error) {
+      $("#lib-count").textContent = "phrase library unavailable";
+    }
+
+    try {
+      const stats = await api("/api/bridge/stats");
+      $("#coverage").textContent =
+        `${stats.claim}. ${stats.authored_verified_pct}% of the authored sheet is speaker-verified; ` +
+        `the corpus is ${stats.corpus_present ? "loaded" : "not built on this machine"}.`;
+    } catch {
+      $("#coverage").textContent = "Coverage unavailable — API not reachable.";
+    }
+  </script>
+</body>
+</html>

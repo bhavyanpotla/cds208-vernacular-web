@@ -24,7 +24,7 @@ from agents import coach, phrases
 from agents import tutor as tutor_agent
 from api import context
 from core import bridge as bridge_engine
-from core import config, db, events, export, lessons, quiz
+from core import config, db, events, export, lessons, quiz, speech
 from core import translate as translator
 from core.i18n import UI_STRINGS, t
 
@@ -77,6 +77,12 @@ class TutorIn(BaseModel):
     question: str = Field(min_length=1, max_length=1000)
     lang: str = "en-IN"
     history: list[dict[str, str]] = Field(default_factory=list)
+
+
+class SpeechIn(BaseModel):
+    text: str = Field(min_length=1, max_length=1500)
+    lang: str = "hi-IN"
+    speaker: str = "shubh"
 
 
 class BridgeIn(BaseModel):
@@ -257,6 +263,44 @@ def ask_tutor(payload: TutorIn) -> dict[str, Any]:
         history=payload.history[-6:],
         user_id=learner_id(),
     )
+
+
+# -------------------------------------------------------------------- speech
+
+
+@app.get("/api/voice/voices")
+def voice_list() -> list[dict[str, str]]:
+    return speech.voices()
+
+
+@app.post("/api/voice/tts")
+def text_to_speech(payload: SpeechIn) -> dict[str, Any]:
+    """Returns base64 audio, or a labelled mock telling the page to use the browser voice."""
+    result = speech.synthesize(payload.text, lang=payload.lang, speaker=payload.speaker)
+    events.log_event(
+        "speech_synthesized",
+        lang=payload.lang,
+        provider=result.get("provider"),
+        speaker=result.get("speaker"),
+        chars=len(payload.text),
+        degraded=bool(result.get("degraded")),
+    )
+    return result
+
+
+@app.post("/api/voice/stt")
+async def speech_to_text(request: Request, lang: str = "hi-IN") -> dict[str, Any]:
+    """Accepts a raw audio body; returns the transcript."""
+    audio = await request.body()
+    result = speech.transcribe(audio, lang=lang)
+    events.log_event(
+        "speech_transcribed",
+        lang=lang,
+        provider=result.get("provider"),
+        chars=len(result.get("text") or ""),
+        degraded=bool(result.get("degraded")),
+    )
+    return result
 
 
 # ----------------------------------------------------------- language bridge

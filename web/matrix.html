@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Translate matrix — ETA Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Sora:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Bengali:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+:root{--ground:#0a0c0e;--ground-2:#101317;--ink:#ede7dc;--ink-2:#b9bec0;--muted:#7d8489;
+--amber:#e8913c;--teal:#2e6b72;--ok:#4fb286;--bad:#c4544a;--hair:rgba(237,231,220,.13);
+--hair-2:rgba(237,231,220,.26);--display:"Syne",system-ui,sans-serif;
+--text:"Sora","Noto Sans Devanagari","Noto Sans Bengali","Noto Sans Tamil","Noto Sans Telugu",system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+header.bar{display:flex;align-items:center;gap:22px;height:58px;padding:0 clamp(16px,3vw,40px);
+border-bottom:1px solid var(--hair);position:sticky;top:0;z-index:10;background:rgba(10,12,14,.88);backdrop-filter:blur(14px)}
+.mark{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.02em}
+.mark i{font-style:normal;color:var(--amber)}
+nav{display:flex;gap:18px;margin-left:auto}
+nav a{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);transition:color .2s}
+nav a:hover,nav a[aria-current]{color:var(--amber)}
+main{padding:clamp(16px,3vw,40px);max-width:1240px;margin:0 auto}
+.label{font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(22px,3.2vw,38px);letter-spacing:-.03em;margin:0 0 8px}
+.lede{color:var(--ink-2);max-width:64ch;margin:0 0 20px}
+.banner{border:1px solid rgba(196,84,74,.5);background:#1d1210;color:#f0b3ac;font-size:13px;
+padding:10px 14px;border-radius:4px;margin-bottom:18px;display:none}
+.banner.show{display:block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.5vw,28px);align-items:start}
+.panel{border:1px solid var(--hair);border-radius:4px;background:var(--ground-2);padding:16px}
+.pickers{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end;margin-bottom:14px}
+select{width:100%;min-height:44px;padding:10px 12px;border-radius:4px;border:1px solid var(--hair-2);
+background:#0c0f12;color:var(--ink);font:inherit;font-size:15px}
+select:focus{outline:2px solid var(--amber);outline-offset:1px}
+textarea{width:100%;min-height:110px;padding:12px 14px;border-radius:4px;border:1px solid var(--hair-2);
+background:#0c0f12;color:var(--ink);font:inherit;font-size:16px;resize:vertical}
+textarea:focus{outline:2px solid var(--amber);outline-offset:1px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{font:inherit;font-weight:500;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;min-height:44px;
+padding:0 16px;border-radius:4px;border:1px solid var(--hair-2);background:transparent;color:var(--ink);cursor:pointer;transition:.2s}
+button:hover{border-color:var(--amber);color:var(--amber)}
+button.primary{background:var(--amber);border-color:var(--amber);color:#17120c;font-weight:600}
+button.rec{border-color:var(--bad);color:#e88b83}
+button[disabled]{opacity:.45;cursor:not-allowed}
+.result{min-height:170px;border:1px solid var(--hair-2);border-radius:4px;padding:18px;display:flex;
+flex-direction:column;justify-content:center;gap:8px;background:#0c0f12}
+.result .big{font-size:clamp(20px,2.6vw,30px);line-height:1.4;word-break:break-word}
+.result.empty .big{color:var(--muted);font-size:16px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border-radius:999px;
+border:1px solid var(--hair-2);color:var(--ink-2)}
+.chip.ok{color:#8fdcb6;border-color:rgba(79,178,134,.5)}
+.chip.warn{color:#f0b374;border-color:rgba(232,145,60,.5)}
+.chip.bad{color:#e39b93;border-color:rgba(196,84,74,.55)}
+.meta{font-size:12px;color:var(--muted);margin:8px 0 0}
+.matrix{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.matrix button{font-size:11px;letter-spacing:.04em;text-transform:none;min-height:38px;padding:0 6px}
+.voice{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.voice label{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink-2);cursor:pointer}
+.voice input{accent-color:#e8913c;width:16px;height:16px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}nav{display:none}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <a class="mark" href="/">ETA PRO<i>.</i></a>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/learn.html">Learn</a>
+    <a href="/bridge.html">Bridge</a>
+    <a href="/matrix.html" aria-current="page">Matrix</a>
+    <a href="/tutor.html">Tutor</a>
+    <a href="/analytics.html">Analytics</a>
+  </nav>
+</header>
+
+<main>
+  <p class="label">Twenty directions, five languages</p>
+  <h1>Any language to any language.</h1>
+  <p class="lede">
+    Hindi, Tamil, Telugu, English and Bengali — every ordered pair, with speech in
+    and speech out. Translation is Sarvam when a key is present, and a labelled mock
+    when it is not.
+  </p>
+
+  <div class="banner" id="banner"></div>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="pickers">
+        <div>
+          <p class="label">From</p>
+          <select id="src"></select>
+        </div>
+        <button id="swap" title="Swap languages" aria-label="Swap languages">⇄</button>
+        <div>
+          <p class="label">To</p>
+          <select id="tgt"></select>
+        </div>
+      </div>
+
+      <textarea id="text" placeholder="Type or speak a sentence…">पौधे सूर्य के प्रकाश से भोजन बनाते हैं।</textarea>
+
+      <div class="row" style="margin-top:12px">
+        <button class="primary" id="go">Translate</button>
+        <button class="rec" id="mic">● Speak</button>
+        <button id="clear">Clear</button>
+      </div>
+      <p class="meta" id="speech-note"></p>
+
+      <p class="label" style="margin-top:20px">All directions</p>
+      <div class="matrix" id="matrix"></div>
+    </section>
+
+    <section>
+      <div class="panel">
+        <p class="label">Translation</p>
+        <div class="result empty" id="result">
+          <div class="big">The translation appears here.</div>
+        </div>
+        <div class="chips" id="chips"></div>
+        <div class="row" style="margin-top:12px">
+          <button id="play">▶ Play aloud</button>
+          <button id="stop">■ Stop</button>
+        </div>
+        <p class="meta" id="detail"></p>
+      </div>
+
+      <div class="panel" style="margin-top:14px">
+        <p class="label">Voice</p>
+        <div class="voice" id="voices"></div>
+        <p class="meta" id="voice-note"></p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var LANGS = [
+    { code: "hi-IN", native: "हिन्दी", en: "Hindi" },
+    { code: "ta-IN", native: "தமிழ்", en: "Tamil" },
+    { code: "te-IN", native: "తెలుగు", en: "Telugu" },
+    { code: "en-IN", native: "English", en: "English" },
+    { code: "bn-IN", native: "বাংলা", en: "Bengali" }
+  ];
+  var $ = function (s) { return document.querySelector(s); };
+  var state = { voice: "anushka", audio: null, lastTranslation: "" };
+
+  function banner(message) {
+    var node = $("#banner");
+    node.textContent = message;
+    node.classList.add("show");
+  }
+
+  async function api(path, options) {
+    options = options || {};
+    var response = await fetch(path, {
+      headers: { "Content-Type": "application/json" },
+      method: options.method || "GET",
+      body: options.body ? JSON.stringify(options.body) : undefined
+    });
+    if (!response.ok) throw new Error(response.status + " " + response.statusText);
+    return response.json();
+  }
+
+  /* ---------- pickers ---------- */
+  function fillSelect(node, selected) {
+    node.innerHTML = LANGS.map(function (l) {
+      return '<option value="' + l.code + '"' + (l.code === selected ? " selected" : "") + ">" +
+        l.native + " · " + l.en + "</option>";
+    }).join("");
+  }
+  fillSelect($("#src"), "hi-IN");
+  fillSelect($("#tgt"), "ta-IN");
+
+  $("#swap").addEventListener("click", function () {
+    var a = $("#src").value;
+    $("#src").value = $("#tgt").value;
+    $("#tgt").value = a;
+    $("#text").value = state.lastTranslation || $("#text").value;
+  });
+
+  /* ---------- the 20 directions ---------- */
+  var pairs = [];
+  LANGS.forEach(function (from) {
+    LANGS.forEach(function (to) {
+      if (from.code !== to.code) pairs.push([from, to]);
+    });
+  });
+  $("#matrix").innerHTML = pairs.map(function (p) {
+    return '<button data-from="' + p[0].code + '" data-to="' + p[1].code + '">' +
+      p[0].en.slice(0, 3) + " → " + p[1].en.slice(0, 3) + "</button>";
+  }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("#matrix button"), function (b) {
+    b.addEventListener("click", function () {
+      $("#src").value = b.dataset.from;
+      $("#tgt").value = b.dataset.to;
+      translate();
+    });
+  });
+
+  /* ---------- translate ---------- */
+  async function translate() {
+    var text = $("#text").value.trim();
+    if (!text) return;
+    var src = $("#src").value, tgt = $("#tgt").value;
+    $("#go").disabled = true;
+    try {
+      var r = await api("/api/translate", { method: "POST", body: { text: text, source: src, target: tgt } });
+      state.lastTranslation = r.text || "";
+      var box = $("#result");
+      if (!r.text) {
+        box.className = "result empty";
+        box.innerHTML = '<div class="big">Nothing came back — check the API log.</div>';
+      } else {
+        box.className = "result";
+        box.innerHTML = '<div class="big">' + r.text + "</div>";
+      }
+      $("#chips").innerHTML =
+        '<span class="chip ' + (r.provider === "sarvam" ? "ok" : "warn") + '">' +
+          (r.provider === "cache" ? "served from cache" : r.provider) + "</span>" +
+        '<span class="chip">' + r.latency_ms + " ms</span>" +
+        '<span class="chip">' + src + " → " + tgt + "</span>" +
+        (r.degraded ? '<span class="chip bad">degraded to mock</span>' : "");
+      $("#detail").textContent = r.provider === "mock"
+        ? "No API key configured, so this is a labelled mock. Add SARVAM_API_KEY and the same click returns real text."
+        : "";
+    } catch (error) {
+      banner("The API is not reachable (" + error.message + "). Start it with: uvicorn api.main:app --port 8000");
+    } finally {
+      $("#go").disabled = false;
+    }
+  }
+
+  $("#go").addEventListener("click", translate);
+  $("#text").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) translate();
+  });
+  $("#clear").addEventListener("click", function () {
+    $("#text").value = "";
+    $("#result").className = "result empty";
+    $("#result").innerHTML = '<div class="big">The translation appears here.</div>';
+    $("#chips").innerHTML = "";
+    $("#detail").textContent = "";
+  });
+
+  /* ---------- speech in: browser recognition ---------- */
+  var Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Recognition) {
+    $("#mic").disabled = true;
+    $("#speech-note").textContent = "No speech API in this browser — type instead.";
+  } else {
+    $("#speech-note").textContent =
+      "Browser recognition is cloud-hosted in Chrome: it needs a connection. With a key, Sarvam's own transcription is used instead.";
+    var rec = new Recognition();
+    var listening = false;
+    $("#mic").addEventListener("click", function () {
+      if (listening) { rec.stop(); return; }
+      rec.lang = $("#src").value;
+      rec.start();
+    });
+    rec.addEventListener("start", function () { listening = true; $("#mic").textContent = "● Listening…"; });
+    rec.addEventListener("result", function (e) {
+      $("#text").value = e.results[0][0].transcript;
+      translate();
+    });
+    rec.addEventListener("end", function () { listening = false; $("#mic").textContent = "● Speak"; });
+    rec.addEventListener("error", function () {
+      listening = false;
+      $("#mic").textContent = "● Speak";
+      $("#speech-note").textContent = "Microphone blocked or offline — type instead.";
+    });
+  }
+
+  /* ---------- speech out: Sarvam, falling back to the browser ---------- */
+  function browserSpeak(text, lang) {
+    if (!window.speechSynthesis) return false;
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang;
+    var match = speechSynthesis.getVoices().filter(function (v) { return v.lang === lang; })[0];
+    if (match) utter.voice = match;
+    speechSynthesis.speak(utter);
+    return true;
+  }
+
+  $("#play").addEventListener("click", async function () {
+    var text = state.lastTranslation || $("#text").value;
+    if (!text.trim()) return;
+    var lang = $("#tgt").value;
+    $("#play").disabled = true;
+    try {
+      var r = await api("/api/voice/tts", {
+        method: "POST",
+        body: { text: text, lang: lang, speaker: state.voice }
+      });
+      if (r.audio) {
+        var bytes = atob(r.audio);
+        var buffer = new Uint8Array(bytes.length);
+        for (var i = 0; i < bytes.length; i++) buffer[i] = bytes.charCodeAt(i);
+        var blob = new Blob([buffer], { type: r.mime || "audio/wav" });
+        new Audio(URL.createObjectURL(blob)).play();
+        $("#voice-note").textContent = "Sarvam voice · " + r.speaker;
+      } else if (browserSpeak(text, lang)) {
+        $("#voice-note").textContent =
+          (r.note || "no key") + " · using the browser voice, which is not a Sarvam voice";
+      } else {
+        $("#voice-note").textContent = "No audio available in this browser.";
+      }
+    } catch (error) {
+      banner("Speech endpoint unreachable (" + error.message + ").");
+    } finally {
+      $("#play").disabled = false;
+    }
+  });
+
+  $("#stop").addEventListener("click", function () {
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    document.querySelectorAll("audio").forEach(function (a) { a.pause(); });
+  });
+
+  /* ---------- voices ---------- */
+  api("/api/voice/voices").then(function (list) {
+    $("#voices").innerHTML = list.map(function (v, i) {
+      return '<label><input type="radio" name="voice" value="' + v.id + '"' +
+        (i === 0 ? " checked" : "") + " /> " + v.label + ' <span style="color:var(--muted)">· ' +
+        v.note + "</span></label>";
+    }).join("");
+    Array.prototype.forEach.call(document.querySelectorAll('input[name="voice"]'), function (input) {
+      input.addEventListener("change", function () { state.voice = input.value; });
+    });
+    state.voice = list[0] ? list[0].id : "shubh";
+  }).catch(function () {
+    $("#voices").innerHTML = '<p class="meta">Voice list unavailable — API not running.</p>';
+  });
+
+  /* ---------- fail loudly, not silently ---------- */
+  fetch("/api/health").catch(function () {
+    banner("The API is not reachable. Run: uvicorn api.main:app --port 8000 — then reload this page. " +
+      "Static pages like /bridge-preview.html work without it.");
+  });
+})();
+</script>
+</body>
+</html>

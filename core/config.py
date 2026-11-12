@@ -94,6 +94,16 @@ def chat_model() -> str:
     return _env("CHAT_MODEL", "sarvam-m")
 
 
+def tts_model() -> str:
+    """Sarvam text-to-speech model. bulbul:v3 has 30+ speakers and is the default."""
+    return _env("TTS_MODEL", "bulbul:v3")
+
+
+def stt_model() -> str:
+    """Sarvam speech-to-text model. saaras:v3 supports the transcribe mode."""
+    return _env("STT_MODEL", "saaras:v3")
+
+
 def request_timeout() -> int:
     return int(_env("VE_REQUEST_TIMEOUT", "20"))
 

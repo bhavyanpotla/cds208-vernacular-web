@@ -103,6 +103,23 @@ terms. English and Hindi are hand-authored; Tamil, Telugu and Bengali are a cont
 gap the translation service closes on first read and caches in SQLite — which is why
 the gloss card tells you whether a definition was authored or translated.
 
+## Translation matrix and voice
+
+`/matrix.html` — five languages, all twenty ordered directions, in and out.
+
+| Layer | How it works |
+|---|---|
+| Text | Sarvam `mayura:v1` for any pair (hi, ta, te, en, bn), cached, with provider and latency shown |
+| Speech in | Sarvam `saaras:v3` when a key is present; the browser's `SpeechRecognition` otherwise, labelled as cloud-hosted |
+| Speech out | Sarvam `bulbul:v3` with three voices — Anushka, Shubh, Aditya — selected per session |
+| No key | Labelled mock: text falls back to the mock translator, speech falls back to the browser's `speechSynthesis` and says so |
+
+Endpoints: `GET /api/voice/voices`, `POST /api/voice/tts`, `POST /api/voice/stt`.
+
+A rejected speaker name is retried once with the documented default rather than
+failing the request, because Sarvam speaker IDs are case-sensitive and
+model-specific.
+
 ## Language bridge (Hindi → Mundari)
 
 `core/bridge.py` answers in tiers and says which tier answered:

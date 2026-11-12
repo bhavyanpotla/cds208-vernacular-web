@@ -113,12 +113,15 @@
       <a href="/">Home</a>
       <a href="/learn.html">Learn</a>
       <a href="/bridge.html" aria-current="page">Bridge</a>
+      <a href="/matrix.html">Matrix</a>
       <a href="/tutor.html">Tutor</a>
       <a href="/analytics.html">Analytics</a>
     </nav>
   </header>
 
   <main>
+    <div class="banner" id="banner" style="display:none;border:1px solid rgba(196,84,74,.5);background:#1d1210;color:#f0b3ac;font-size:13px;padding:10px 14px;border-radius:4px;margin-bottom:16px"></div>
+
     <p class="label">Classroom bridge — Hindi to Mundari</p>
     <h1 style="font-family:var(--display);font-weight:700;font-size:clamp(24px,3.4vw,40px);letter-spacing:-0.03em;margin:0 0 10px">
       Say it in Hindi. Show it in Mundari.
@@ -173,6 +176,14 @@
   </main>
 
   <script type="module">
+    // a dead API must say so, not sit there looking broken
+    fetch("/api/health").catch(() => {
+      const node = document.getElementById("banner");
+      node.style.display = "block";
+      node.textContent =
+        "The API is not reachable. Run: uvicorn api.main:app --port 8000 — then reload. " +
+        "For a version that needs no server, open /bridge-preview.html.";
+    });
     const $ = (sel) => document.querySelector(sel);
 
     async function api(path, options = {}) {

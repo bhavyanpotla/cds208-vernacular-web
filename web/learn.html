@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="ve-api" content="" />
   <title>Learn — Vernacular Learning Platform</title>
   <link rel="stylesheet" href="/assets/app.css" />
 </head>
@@ -73,6 +74,9 @@
     <p>Every tap and every answer is an event. <a href="/analytics.html">See the log</a></p>
   </footer>
 
+  <script>/* API base: empty = same origin (local uvicorn or Render). On Netlify set the
+   meta tag above to the Render URL, e.g. https://eta-pro-api.onrender.com */
+window.VE_API = (document.querySelector('meta[name="ve-api"]') || {}).content || "";</script>
   <script type="module">
     import { boot, api, chip, esc, lang, LANGS, toast, reveal, tilt } from "/assets/app.js";
 

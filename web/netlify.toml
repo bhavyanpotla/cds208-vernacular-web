@@ -1,0 +1,26 @@
+# Front end for the ETA Pro app.
+#
+# Netlify serves the static pages in this folder. It cannot run the FastAPI
+# backend — uvicorn is a long-lived Python process, which Netlify's static host
+# and serverless functions do not provide. The API lives on Render (or Fly, or a
+# VPS); point the pages at it with the <meta name="ve-api"> tag in each HTML file.
+#
+# Netlify auto-deploys on every push to main, so the site follows the repo.
+
+[build]
+  publish = "web"
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# no SPA rewrite on purpose: each page is a real file, and a catch-all would
+# hide a typo'd path instead of 404ing it

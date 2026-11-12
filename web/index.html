@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="ve-api" content="" />
   <title>Vernacular Learning Platform — CDS208</title>
   <meta name="description" content="Read, ask and be assessed in your mother tongue. CDS208 final project." />
   <link rel="stylesheet" href="/assets/app.css" />
@@ -108,6 +109,9 @@
     <p>CDS208 final project · FastAPI + vanilla HTML/CSS/JS · Sarvam AI with an offline mock · <a href="/api/health">API health</a></p>
   </footer>
 
+  <script>/* API base: empty = same origin (local uvicorn or Render). On Netlify set the
+   meta tag above to the Render URL, e.g. https://eta-pro-api.onrender.com */
+window.VE_API = (document.querySelector('meta[name="ve-api"]') || {}).content || "";</script>
   <script type="module">
     import { boot, api, chip, countUp } from "/assets/app.js";
 

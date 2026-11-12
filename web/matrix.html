@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Translate matrix — ETA Pro</title>
+<meta name="ve-api" content="" />
+  <title>Translate matrix — ETA Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Sora:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Bengali:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&display=swap" rel="stylesheet" />
 <style>
@@ -137,7 +138,10 @@ border:1px solid var(--hair-2);color:var(--ink-2)}
   </div>
 </main>
 
-<script>
+<script>/* API base: empty = same origin (local uvicorn or Render). On Netlify set the
+   meta tag above to the Render URL, e.g. https://eta-pro-api.onrender.com */
+window.VE_API = (document.querySelector('meta[name="ve-api"]') || {}).content || "";</script>
+  <script>
 (function () {
   "use strict";
   var LANGS = [
@@ -158,7 +162,7 @@ border:1px solid var(--hair-2);color:var(--ink-2)}
 
   async function api(path, options) {
     options = options || {};
-    var response = await fetch(path, {
+    var response = await fetch((window.VE_API || "") + path, {
       headers: { "Content-Type": "application/json" },
       method: options.method || "GET",
       body: options.body ? JSON.stringify(options.body) : undefined
@@ -338,7 +342,7 @@ border:1px solid var(--hair-2);color:var(--ink-2)}
   });
 
   /* ---------- fail loudly, not silently ---------- */
-  fetch("/api/health").catch(function () {
+  fetch((window.VE_API || "") + "/api/health").catch(function () {
     banner("The API is not reachable. Run: uvicorn api.main:app --port 8000 — then reload this page. " +
       "Static pages like /bridge-preview.html work without it.");
   });

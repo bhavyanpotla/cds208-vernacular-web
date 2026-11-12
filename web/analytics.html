@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="ve-api" content="" />
   <title>Analytics — Vernacular Learning Platform</title>
   <link rel="stylesheet" href="/assets/app.css" />
 </head>
@@ -86,6 +87,9 @@
 
   <footer><p>The in-app numbers and the .pbix read the same tables, so they cannot disagree.</p></footer>
 
+  <script>/* API base: empty = same origin (local uvicorn or Render). On Netlify set the
+   meta tag above to the Render URL, e.g. https://eta-pro-api.onrender.com */
+window.VE_API = (document.querySelector('meta[name="ve-api"]') || {}).content || "";</script>
   <script type="module">
     import { boot, api, chip, esc, toast } from "/assets/app.js";
 

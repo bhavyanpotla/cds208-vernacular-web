@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="ve-api" content="" />
   <title>Bridge console — ETA Pro</title>
   <meta name="description" content="Hindi to Mundari classroom console: speak or type, get a tiered answer with an honest confidence label, project it to the class." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -175,9 +176,12 @@
     </div>
   </main>
 
+  <script>/* API base: empty = same origin (local uvicorn or Render). On Netlify set the
+   meta tag above to the Render URL, e.g. https://eta-pro-api.onrender.com */
+window.VE_API = (document.querySelector('meta[name="ve-api"]') || {}).content || "";</script>
   <script type="module">
     // a dead API must say so, not sit there looking broken
-    fetch("/api/health").catch(() => {
+    fetch((window.VE_API || "") + "/api/health").catch(() => {
       const node = document.getElementById("banner");
       node.style.display = "block";
       node.textContent =
@@ -187,7 +191,7 @@
     const $ = (sel) => document.querySelector(sel);
 
     async function api(path, options = {}) {
-      const response = await fetch(path, {
+      const response = await fetch((window.VE_API || "") + path, {
         headers: { "Content-Type": "application/json" },
         ...options,
         body: options.body ? JSON.stringify(options.body) : undefined,

@@ -32,9 +32,15 @@ function sessionId() {
   return id;
 }
 
-/** fetch wrapper: JSON in, JSON out, one error shape. */
+/** fetch wrapper: JSON in, JSON out, one error shape.
+ *
+ *  ``window.VE_API`` is the API origin. Empty means same origin (local uvicorn
+ *  or a single-process Render deploy). When the static front end is hosted
+ *  separately — Netlify, for instance — set the <meta name="ve-api"> tag to the
+ *  backend URL and every call follows it.
+ */
 export async function api(path, options = {}) {
-  const response = await fetch(path, {
+  const response = await fetch((window.VE_API || "") + path, {
     headers: {
       "Content-Type": "application/json",
       "X-Session-Id": sessionId(),
